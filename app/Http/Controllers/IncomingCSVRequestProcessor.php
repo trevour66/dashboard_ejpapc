@@ -569,9 +569,12 @@ class IncomingCSVRequestProcessor extends Controller
         try {
             //code...
             $request->validate([
-                'file' => 'required|mimes:csv',
+                'file' => 'required|file|mimetypes:text/csv,text/plain,application/csv',
+                // 'file' => 'required|mimes:csv',
                 'auth' => 'required|string',
             ]);
+
+            // 'file' => 'required|file|mimetypes:text/csv,text/plain,application/csv'
 
             $seed = uniqid('', true);
             $seed = hash('md2', $seed);
@@ -830,7 +833,8 @@ class IncomingCSVRequestProcessor extends Controller
         try {
             //code...
             $request->validate([
-                'file' => 'required|mimes:csv',
+                'file' => 'required|file|mimetypes:text/csv,text/plain,application/csv',
+                // 'file' => 'required|mimes:csv',
                 'auth' => 'required|string',
             ]);
 
