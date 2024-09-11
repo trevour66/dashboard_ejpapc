@@ -28,8 +28,6 @@ class IncomingStepsCSVFileUploadTest extends TestCase
         // $mimeType = mime_content_type($filePath);
         // dd($mimeType);
 
-        return;
-
         $fileContent = fread($file, filesize(storage_path('/matters_CSVs/test_file_steps.csv')));
 
         fclose($file);
