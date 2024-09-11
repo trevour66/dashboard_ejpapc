@@ -890,6 +890,18 @@ class CSVFileProcessor
                     if (!($this->matterDataBeforeUpdate ?? false)) {
                         throw new \Error("No matter found with given action step id");
                     }
+                    
+                    $leadAttached = $this->matterDataBeforeUpdate->lead ?? false;
+
+                    if ($leadAttached) {
+                        $this->createLeadStatusChangeLogTableDataFromStepsCSV($leadAttached, "Intake Scheduled", $record["days to_Intake_New Lead"],  $this->matterDataBeforeUpdate);
+
+                        $this->createLeadStatusChangeLogTableDataFromStepsCSV($leadAttached, "Consultation Scheduled", $record["days to_Consultation_New Lead"],  $this->matterDataBeforeUpdate);
+
+                        $this->createLeadStatusChangeLogTableDataFromStepsCSV($leadAttached, "Sent Retainer", $record["days to_Retainer Sent_New Lead"],  $this->matterDataBeforeUpdate);
+
+                        $this->createLeadStatusChangeLogTableDataFromStepsCSV($leadAttached, "Closed - Retained", $record["days to_Closed (Retained)_New Lead"],  $this->matterDataBeforeUpdate);
+                    }
 
                     $this->createCurrentStepChangeLogTableDataFromStepsCSV($this->matterDataBeforeUpdate, "Intake", $record["days to_Intake_New Lead"]);
 
