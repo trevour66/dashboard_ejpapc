@@ -702,6 +702,7 @@ class LeadsCalculator extends Calculator
         } catch (Throwable $th) {
             $this->leads_averageDaysToIntakeSchedule = "undefined";
             logger("Error : prepareAverageTime_newLead_to_intake_on_leadStatus");
+            logger(print_r($th->getMessage(), true));
         }
     }
 
