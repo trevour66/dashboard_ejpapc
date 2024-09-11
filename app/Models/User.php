@@ -15,6 +15,13 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    /**
+     * The database connection that should be used by the model.
+     *
+     * @var string
+     */
+    protected $connection = 'mysql_only_users';
+
     protected $primaryKey = 'user_id';
 
     /**
@@ -53,28 +60,5 @@ class User extends Authenticatable
      */
     public function employee(): HasOne {
         return $this->hasOne(Employee::class, 'user_id');
-    }
-
-     /**
-     * Get the employee associated with the user.
-     */
-    public function invite(): HasMany {
-        return $this->hasMany(Invite::class, 'invite_sent_by');
-    }
-
-    /**
-     * Get the actionStepCredRequest for the blog post.
-     */
-    public function actionStepCred(): HasOne
-    {
-        return $this->hasOne(ActionStep_Asset::class, 'user_id');
-    }
-
-    /**
-     * Get the actionStepCredRequest for the blog post.
-     */
-    public function actionStepCredRequest(): HasOne
-    {
-        return $this->hasOne(actionStepCredRequest::class, 'request_to_be_fulfiled_by');
     }
 }
