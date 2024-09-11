@@ -171,6 +171,12 @@ class LeadsCalculator extends Calculator
 
     public function prepareNewLeads()
     {
+        if(
+            $this->loaded_All_LeadsCollection == null ||
+            count($this->loaded_All_LeadsCollection ?? []) == 0)
+        {
+            return;
+        }
 
         for ($i = 0; $i < count($this->loaded_All_LeadsCollection); $i++) {
             $elem = $this->loaded_All_LeadsCollection[$i];
