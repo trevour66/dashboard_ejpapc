@@ -360,6 +360,10 @@ class LeadsCalculator extends Calculator
                 ->where('lead_status_change_logs.LSCL_change_date_time', '!=', null)
                 ->where('lead_statuses.LSt_status', '=', $this->intake_step_identifier_on_lead_status);
 
+                $fullQuery = Str::replaceArray('?', $loadedIntakeScheduledStatus_changeLogCollection_query->getBindings(), $loadedIntakeScheduledStatus_changeLogCollection_query->toSql());
+
+                logger($fullQuery);
+
             if (
                 ($from ?? false)
             ) {
