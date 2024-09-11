@@ -648,11 +648,10 @@ class LeadsCalculator extends Calculator
                 return;
             }
 
-            logger(print_r($this->loadedIntakeScheduledStatus_changeLogCollection, true));
+            // logger(print_r($this->loadedIntakeScheduledStatus_changeLogCollection, true));
 
-            for ($i = 0; $i < count($this->loadedIntakeScheduledStatus_changeLogCollection); $i++) {
-
-                $elem = $this->loadedIntakeScheduledStatus_changeLogCollection[$i];
+            foreach ($this->loadedIntakeScheduledStatus_changeLogCollection as $key => $value) {
+                $elem = $value;
 
                 $date_intakeScheduleWasRegisteredInDatabase = $elem->LSCL_change_date_time ?? false;
 
@@ -720,9 +719,8 @@ class LeadsCalculator extends Calculator
                 return;
             }
 
-            for ($i = 0; $i < count($this->loadedConsultationScheduledStatus_changeLogCollection); $i++) {
-
-                $elem = $this->loadedConsultationScheduledStatus_changeLogCollection[$i];
+            foreach ($this->loadedConsultationScheduledStatus_changeLogCollection as $key => $value) {
+                $elem = $value;
 
                 $date_consultationScheduleWasRegisteredInDatabase = $elem->LSCL_change_date_time ?? false;
 
@@ -789,9 +787,8 @@ class LeadsCalculator extends Calculator
                 return;
             }
 
-            for ($i = 0; $i < count($this->loadedRetainerMeetingConsultation_changeLogCollection); $i++) {
-
-                $elem = $this->loadedRetainerMeetingConsultation_changeLogCollection[$i];
+            foreach ($this->loadedRetainerMeetingConsultation_changeLogCollection as $key => $value) {
+                $elem = $value;
 
                 $date_retainerMeetingWasScheduledInDatabase = $elem->CCL_schedule_date ?? false;
 
