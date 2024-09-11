@@ -648,6 +648,8 @@ class LeadsCalculator extends Calculator
                 return;
             }
 
+            logger(print_r($this->loadedIntakeScheduledStatus_changeLogCollection, true));
+
             for ($i = 0; $i < count($this->loadedIntakeScheduledStatus_changeLogCollection); $i++) {
 
                 $elem = $this->loadedIntakeScheduledStatus_changeLogCollection[$i];
