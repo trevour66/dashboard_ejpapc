@@ -357,12 +357,13 @@ class LeadsCalculator extends Calculator
             //code...
             $loadedIntakeScheduledStatus_changeLogCollection_query = leadStatusChangeLog::leftJoin('lead_statuses', 'lead_status_change_logs.LSCL_current_status', '=', 'lead_statuses.LSt_id')
                 ->leftJoin('matters', 'lead_status_change_logs.LSCL_action_step_matter_id', '=', 'matters.matter_id')
+                ->leftJoin('leads', 'matters.matter_lead', '=', 'leads.lead_id')
                 ->where('lead_status_change_logs.LSCL_change_date_time', '!=', null)
                 ->where('lead_statuses.LSt_status', '=', $this->intake_step_identifier_on_lead_status);
 
-                $fullQuery = Str::replaceArray('?', $loadedIntakeScheduledStatus_changeLogCollection_query->getBindings(), $loadedIntakeScheduledStatus_changeLogCollection_query->toSql());
+                // $fullQuery = Str::replaceArray('?', $loadedIntakeScheduledStatus_changeLogCollection_query->getBindings(), $loadedIntakeScheduledStatus_changeLogCollection_query->toSql());
 
-                logger($fullQuery);
+                // logger($fullQuery);
 
             if (
                 ($from ?? false)
@@ -371,7 +372,7 @@ class LeadsCalculator extends Calculator
                     $fromDate = new DateTime($from);
 
 
-                    $loadedIntakeScheduledStatus_changeLogCollection_query = $loadedIntakeScheduledStatus_changeLogCollection_query->where('lead_status_change_logs.LSCL_change_date_time', '>=', $fromDate);
+                    $loadedIntakeScheduledStatus_changeLogCollection_query = $loadedIntakeScheduledStatus_changeLogCollection_query->where('leads.lead_date_created', '>=', $fromDate);
                 }
             }
 
@@ -382,7 +383,7 @@ class LeadsCalculator extends Calculator
                 if ($to !== 'all') {
                     $toDate = new DateTime($to);
 
-                    $loadedIntakeScheduledStatus_changeLogCollection_query = $loadedIntakeScheduledStatus_changeLogCollection_query->where('lead_status_change_logs.LSCL_change_date_time', '<=', $toDate);
+                    $loadedIntakeScheduledStatus_changeLogCollection_query = $loadedIntakeScheduledStatus_changeLogCollection_query->where('leads.lead_date_created', '<=', $toDate);
                 }
             }
 
@@ -390,6 +391,7 @@ class LeadsCalculator extends Calculator
                 [
                     'lead_statuses.*',
                     'matters.*',
+                    'leads.*',
 
                     'lead_status_change_logs.LSCL_previous_status as LSCL_previous_status',
                     'lead_status_change_logs.LSCL_current_status as LSCL_current_status',
@@ -399,6 +401,8 @@ class LeadsCalculator extends Calculator
 
                 ]
             )->get();
+
+            $this->loadedIntakeScheduledStatus_changeLogCollection = $this->loadedIntakeScheduledStatus_changeLogCollection->sortBy('LSCL_change_date_time')->unique('lead_id');
 
             // logger(print_r("Intake Schedule Collection: " . count($this->loadedIntakeScheduledStatus_changeLogCollection), true));
         } catch (Throwable $th) {
@@ -414,6 +418,7 @@ class LeadsCalculator extends Calculator
             //code...
             $loadedConsultationScheduledStatus_changeLogCollection_query = leadStatusChangeLog::leftJoin('lead_statuses', 'lead_status_change_logs.LSCL_current_status', '=', 'lead_statuses.LSt_id')
                 ->leftJoin('matters', 'lead_status_change_logs.LSCL_action_step_matter_id', '=', 'matters.matter_id')
+                ->leftJoin('leads', 'matters.matter_lead', '=', 'leads.lead_id')
                 ->where('lead_status_change_logs.LSCL_change_date_time', '!=', null)
                 ->where('lead_statuses.LSt_status', '=', $this->consultatnScheduled_step_identifier_on_lead_status);
 
@@ -424,7 +429,7 @@ class LeadsCalculator extends Calculator
                     $fromDate = new DateTime($from);
 
 
-                    $loadedConsultationScheduledStatus_changeLogCollection_query = $loadedConsultationScheduledStatus_changeLogCollection_query->where('lead_status_change_logs.LSCL_change_date_time', '>=', $fromDate);
+                    $loadedConsultationScheduledStatus_changeLogCollection_query = $loadedConsultationScheduledStatus_changeLogCollection_query->where('leads.lead_date_created', '>=', $fromDate);
                 }
             }
 
@@ -435,7 +440,7 @@ class LeadsCalculator extends Calculator
                 if ($to !== 'all') {
                     $toDate = new DateTime($to);
 
-                    $loadedConsultationScheduledStatus_changeLogCollection_query = $loadedConsultationScheduledStatus_changeLogCollection_query->where('lead_status_change_logs.LSCL_change_date_time', '<=', $toDate);
+                    $loadedConsultationScheduledStatus_changeLogCollection_query = $loadedConsultationScheduledStatus_changeLogCollection_query->where('leads.lead_date_created', '<=', $toDate);
                 }
             }
 
@@ -443,6 +448,7 @@ class LeadsCalculator extends Calculator
                 [
                     'lead_statuses.*',
                     'matters.*',
+                    'leads.*',
 
                     'lead_status_change_logs.LSCL_previous_status as LSCL_previous_status',
                     'lead_status_change_logs.LSCL_current_status as LSCL_current_status',
@@ -452,6 +458,8 @@ class LeadsCalculator extends Calculator
 
                 ]
             )->get();
+
+            $this->loadedConsultationScheduledStatus_changeLogCollection = $this->loadedConsultationScheduledStatus_changeLogCollection->sortBy('LSCL_change_date_time')->unique('lead_id');
 
             // logger(print_r("Consultation Schedule Collection: " . count($this->loadedConsultationScheduledStatus_changeLogCollection), true));
         } catch (Throwable $th) {
@@ -466,6 +474,7 @@ class LeadsCalculator extends Calculator
         try {
             //code...
             $loadedRetainerMeetingConsultation_changeLogCollection_query = consultationChangeLog::leftJoin('matters', 'consultation_change_logs.CCL_action_step_matter_id', '=', 'matters.matter_id')
+            ->leftJoin('leads', 'matters.matter_lead', '=', 'leads.lead_id')
                 ->where('consultation_change_logs.CCL_schedule_date', '!=', null)
                 ->where('consultation_change_logs.CCL_outcome', '=', $this->retainerMeetingScheduled_identifier_on_consultation_change_log);
 
@@ -476,7 +485,7 @@ class LeadsCalculator extends Calculator
                     $fromDate = new DateTime($from);
 
 
-                    $loadedRetainerMeetingConsultation_changeLogCollection_query = $loadedRetainerMeetingConsultation_changeLogCollection_query->where('consultation_change_logs.CCL_schedule_date', '>=', $fromDate);
+                    $loadedRetainerMeetingConsultation_changeLogCollection_query = $loadedRetainerMeetingConsultation_changeLogCollection_query->where('leads.lead_date_created', '>=', $fromDate);
                 }
             }
 
@@ -487,16 +496,19 @@ class LeadsCalculator extends Calculator
                 if ($to !== 'all') {
                     $toDate = new DateTime($to);
 
-                    $loadedRetainerMeetingConsultation_changeLogCollection_query = $loadedRetainerMeetingConsultation_changeLogCollection_query->where('consultation_change_logs.CCL_schedule_date', '<=', $toDate);
+                    $loadedRetainerMeetingConsultation_changeLogCollection_query = $loadedRetainerMeetingConsultation_changeLogCollection_query->where('leads.lead_date_created', '<=', $toDate);
                 }
             }
 
             $this->loadedRetainerMeetingConsultation_changeLogCollection = $loadedRetainerMeetingConsultation_changeLogCollection_query->select(
                 [
                     'matters.*',
+                    'leads.*',
                     'consultation_change_logs.*',
                 ]
             )->get();
+
+            $this->loadedRetainerMeetingConsultation_changeLogCollection = $this->loadedRetainerMeetingConsultation_changeLogCollection->unique('lead_id');
 
             // logger(print_r("Retainer meeting: " . count($this->loadedRetainerMeetingConsultation_changeLogCollection), true));
         } catch (Throwable $th) {
