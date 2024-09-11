@@ -594,6 +594,15 @@ class IncomingCSVRequestProcessor extends Controller
         } catch (\Throwable $th) {
             //throw $th;
             logger(print_r($th->getMessage(), true));
+            $resData = response(json_encode(
+                [
+                    'status' => "error",
+                    "message" => $th->getMessage()
+                ]
+            ), 200)
+                ->header('Content-Type', 'application/json');
+
+            return $resData;
         }
     }
 
@@ -844,6 +853,15 @@ class IncomingCSVRequestProcessor extends Controller
         } catch (\Throwable $th) {
             //throw $th;
             logger(print_r($th->getMessage(), true));
+            $resData = response(json_encode(
+                [
+                    'status' => "error",
+                    "message" => $th->getMessage()
+                ]
+            ), 200)
+                ->header('Content-Type', 'application/json');
+
+            return $resData;
         }
     }
 
