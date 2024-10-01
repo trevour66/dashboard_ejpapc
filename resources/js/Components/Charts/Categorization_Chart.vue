@@ -28,6 +28,16 @@ const props = defineProps({
 	},
 });
 
+const roundToTwoDecimals = (value) => {
+    // Check if the value is a number and not NaN
+    if (typeof value === 'number' && !isNaN(value)) {
+        // Round to 2 decimal places
+        return `${Math.round(value * 100) / 100} -`;
+    } else {
+        return '';
+    }
+}
+
 const chartOptions = reactive({
 	chart: {
 		type: "treemap",
@@ -44,7 +54,7 @@ const chartOptions = reactive({
 		enabled: true,
 		formatter: function (text, opt) {
 			let percentage = (opt.value / props.total) * 100;
-			percentage = `${Math.ceil(percentage)}%`;
+			percentage = `${roundToTwoDecimals(opt.value)} ${Math.ceil(percentage)}%`;
 			return [text, percentage];
 		},
 	},

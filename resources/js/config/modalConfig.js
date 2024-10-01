@@ -1,6 +1,7 @@
 const modalViewTypes = {
 	matters_list_view: "matters_list_view",
 	leads_list_view: "leads_list_view",
+	custom_date_range_form_view: "custom_date_range_form_view",
 };
 
 const casesModals = {
@@ -111,6 +112,10 @@ const casesModals = {
 
 const ModalTypes = {
 	...casesModals,
+	custom_date_range_form_view: {
+		name: 'custom_date',
+		view_type: modalViewTypes.custom_date_range_form_view
+	},
 	none: {
 		name: "none",
 		view_type: null,

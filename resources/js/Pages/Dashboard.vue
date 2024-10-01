@@ -18,18 +18,24 @@ import Financial_Charts from "@/Pages/Dashboard-Partials/Financial_Charts/index.
 import Cases_Charts from "@/Pages/Dashboard-Partials/Cases_Charts/index.vue";
 
 import { useLeadChartsStore } from "@/Store/leadCharts";
+import { useModalStore } from "@/Store/modalStore.js";
 
 const props = defineProps({
 	leads: Object,
 });
 
 const leadChartStore = useLeadChartsStore();
+const modalStore = useModalStore();
 
 const isFixed = ref(false);
 const toolbar = ref(null);
 const toolbarOffsetTop = ref(0);
 
 const updateTimeframe = async (timeframe) => {
+	if(timeframe == 'custom'){
+		modalStore.setCustomDateRangeModal()
+		return
+	}
 	leadChartStore.setLeadTimeframe(timeframe);
 };
 
@@ -70,6 +76,24 @@ onBeforeUnmount(() => {
 					class="mb-4 rounded"
 				>
 					<div class="flex flex-col gap-6">
+						<div class="flex items-center justify-between">
+							<div>
+								<div class="w-full md:block md:w-auto" >
+									<ul class="font-medium flex flex-col p-4 md:p-0 mt-4 border-2 border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white">
+										<li>
+											<a href="#leads" class="block py-2 px-3 text-gray-900 hover:text-blue-700" aria-current="page">Leads</a>
+										</li>
+										<li>
+											<a href="#finances" class="block py-2 px-3 text-gray-900 hover:text-blue-700">Finances</a>
+										</li>
+										<li>
+											<a href="#cases" class="block py-2 px-3 text-gray-900 hover:text-blue-700">Cases</a>
+										</li>
+										
+									</ul>
+									</div>
+							</div>
+						</div>
 						<div>
 							<div class="toolbar float-right">
 								<div class="inline-flex rounded-md shadow-sm" role="group">
@@ -87,7 +111,21 @@ onBeforeUnmount(() => {
 										}"
 										class="px-1.5 md:px-4 py-1 md:py-2 text-sm font-medium text-gray-900 border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10"
 									>
-										{{ button.name }}
+										<span v-if="
+											(button?.name ?? '') === 'Custom'
+										">
+											{{ button.name }}
+											<span v-if="
+												leadChartStore.getRangeDateString
+											">
+											
+												({{ leadChartStore.getRangeDateString }})
+											</span>
+											
+										</span>
+										<span v-else>
+											{{ button.name }}
+										</span>
 									</button>
 								</div>
 							</div>
@@ -96,13 +134,13 @@ onBeforeUnmount(() => {
 					</div>
 				</section>
 				<div class="flex flex-col gap-10 relative">
-					<section>
+					<section id="leads">
 						<LeadsChart :leads="leads" />
 					</section>
-					<section>
+					<section id="finances">
 						<Financial_Charts />
 					</section>
-					<section>
+					<section id="cases">
 						<Cases_Charts />
 					</section>
 				</div>

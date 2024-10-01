@@ -18,6 +18,10 @@ export const useModalStore = defineStore("modalStore", () => {
 		currentModal.value = modal;
 	};
 
+	const setCustomDateRangeModal = () => {
+		currentModal.value = ModalTypes.custom_date_range_form_view
+	}
+
 	const setModalIntializationData = (modalIntializationData) => {
 		currentModalIntializationData.value = modalIntializationData;
 	};
@@ -30,6 +34,7 @@ export const useModalStore = defineStore("modalStore", () => {
 		getCurrentModal,
 		getCurrentModalIntializationData,
 		setModal,
+		setCustomDateRangeModal,
 		setModalIntializationData,
 		closeModal,
 	};

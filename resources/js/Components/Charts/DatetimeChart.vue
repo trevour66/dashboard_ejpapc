@@ -4,6 +4,10 @@ import { useElementVisibility } from "@vueuse/core";
 import { Timeframe } from "@/config/timeframe";
 import generateRandomId from "@/utils/randomId";
 
+import { useLeadChartsStore } from "@/Store/leadCharts";
+
+const leadChartStore = useLeadChartsStore();
+
 const emits = defineEmits(["zoomLevelChanged"]);
 
 const props = defineProps({
@@ -121,6 +125,20 @@ const updateData = () => {
 			from = new Date(from).getTime();
 			chart.value.zoomX(from, today.getTime());
 
+			break;
+		
+		case Timeframe.custom:
+			from = leadChartStore.get_customRange_leadTimeframe_from
+			let to = leadChartStore.get_customRange_leadTimeframe_to
+			
+			from = new Date(from).getTime();
+			to = new Date(to).getTime();
+
+			console.log(from)
+			console.log(to)
+			
+			chart.value.zoomX(from, to);
+			
 			break;
 
 		case Timeframe.all:
