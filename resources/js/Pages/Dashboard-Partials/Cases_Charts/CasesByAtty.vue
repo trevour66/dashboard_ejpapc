@@ -1,20 +1,27 @@
 <script setup>
 import { ref, reactive, watchEffect, computed, onMounted } from "vue";
-import Categorization_PieChart from "../../../Components/Charts/Categorization_Chart_Pie.vue";
 import { useLeadChartsStore } from "../../../Store/leadCharts";
+
+import Categorization_TreeChart from "@/Components/Charts/Categorization_Chart.vue";
 
 import { ModalTypes } from "@/config/modalConfig";
 import { useModalStore } from "@/Store/modalStore.js";
 
+import TreeMapIcon from "@/Components/TreeMapIcon.vue";
+import ListIcon from "@/Components/ListIcon.vue";
+
+import LeadLists from "@/Components/Lists/LeadLists.vue";
+import { viewTypes } from "@/config/listViewTypes";
+
 const props = defineProps({
-	dataSet: {
-		required: true,
-		type: Object,
-	},
-	meta: {
-		required: true,
-		type: Object,
-	},
+   dataSet: {
+      required: true,
+      type: Object,
+   },
+   meta: {
+      required: true,
+      type: Object,
+   },
 });
 
 const leadChartStore = useLeadChartsStore();
@@ -24,94 +31,132 @@ const dataSet_labels = ref([]);
 const dataSet_series = ref([]);
 const dataSet_total = ref(0);
 
-onMounted(() => {
-	// console.log(Object.keys(props.dataSet));
-	// console.log(props.dataSet);
-	if ((Object.keys(props.dataSet) ?? []).length > 0) {
-		for (const key in props.dataSet) {
-			// console.log(key);
-			if (Object.hasOwnProperty.call(props.dataSet, key)) {
-				const element = props.dataSet[key];
+const tableHeaders = ref(["Attorney", "Count"]);
+const tableRows = ref([]);
 
-				dataSet_labels.value.push(key);
-				dataSet_series.value.push(element);
-			}
-		}
-	}
-	// console.log(dataSet_labels);
-	// console.log(dataSet_series);
-	// console.log(dataSet_total);
+const activeView = ref(viewTypes.list);
+
+const switchView = (viewType) => {
+   activeView.value = viewType;
+};
+
+onMounted(() => {
+   if ((Object.keys(props.dataSet) ?? []).length > 0) {
+      for (const key in props.dataSet) {
+         // console.log(key);
+         if (Object.hasOwnProperty.call(props.dataSet, key)) {
+            const element = props.dataSet[key];
+
+            dataSet_labels.value.push(key);
+            dataSet_series.value.push({
+               x: key,
+               y: element,
+            });
+
+            tableRows.value.push([key, element]);
+
+            dataSet_total.value = dataSet_total.value + element;
+         }
+      }
+   }
 });
 
 const loadModal = (selectedData) => {
-	// console.log(selectedData);
+   const selected_x = selectedData?.x ?? false;
 
-	const filter = selectedData ?? false;
+   if (!selected_x) {
+      return;
+   }
 
-	if (!filter) {
-		return;
-	}
+   if (!props.meta) return;
 
-	if (!props.meta) return;
+   let modal = "";
 
-	let modal = "";
+   for (const key in ModalTypes) {
+      if (Object.hasOwnProperty.call(ModalTypes, key)) {
+         const element = ModalTypes[key];
+         if (element.label === props.meta.label) {
+            modal = key;
+         }
+      }
+   }
 
-	for (const key in ModalTypes) {
-		if (Object.hasOwnProperty.call(ModalTypes, key)) {
-			const element = ModalTypes[key];
-			if (element.label === props.meta.label) {
-				modal = key;
-			}
-		}
-	}
+   if (!modal) return;
 
-	// console.log(modal);
+   let selectedModal = ModalTypes[modal] ?? null;
 
-	if (!modal) return;
+   if (selectedModal == null) return;
 
-	let selectedModal = ModalTypes[modal] ?? null;
+   modalStore.setModal(selectedModal);
 
-	if (selectedModal == null) return;
+   const modalInitData = { ...props.meta };
 
-	modalStore.setModal(selectedModal);
+   if (selectedModal?.has_filter ?? false) {
+      modalInitData.filter = selected_x;
+   }
 
-	const modalInitData = { ...props.meta };
-
-	if (selectedModal?.has_filter ?? false) {
-		modalInitData.filter = filter;
-	}
-
-	modalStore.setModalIntializationData(modalInitData);
+   modalStore.setModalIntializationData(modalInitData);
 };
 </script>
 
 <template>
-	<div>
-		<div class="w-full bg-white rounded-lg shadow dark:bg-gray-800 p-4">
-			<div
-				class="flex justify-between pb-4 mb-4 border-b border-gray-200 dark:border-gray-700"
-			>
-				<div class="flex items-center">
-					<div>
-						<h5
-							class="leading-none text-lg font-bold text-gray-700 dark:text-white pb-1"
-						>
-							Cases by Attorney:
-						</h5>
-					</div>
-				</div>
-			</div>
-			<div class="my-2">
-				<Categorization_PieChart
-					:chartID="'case-by-atty'"
-					:timeline="leadChartStore.getCurrentLeadTimeframe"
-					:series="dataSet_series"
-					:labels="dataSet_labels"
-					:total="dataSet_total"
-					:chart_height="400"
-					@dataSelected="loadModal"
-				/>
-			</div>
-		</div>
-	</div>
+   <div>
+      <div class="w-full bg-white rounded-lg shadow dark:bg-gray-800 p-4">
+         <div
+            class="flex justify-between pb-4 mb-4 border-b border-gray-200 dark:border-gray-700"
+         >
+            <div class="flex items-center gap-x-4">
+               <div>
+                  <h5
+                     class="leading-none text-lg font-bold text-gray-700 dark:text-white pb-1"
+                  >
+                     Cases by Attorney:
+                  </h5>
+               </div>
+               <div class="flex justify-center items-center gap-x-3">
+                  <div
+                     @click="switchView(viewTypes.graph)"
+                     :class="{
+                        'border-black': activeView === viewTypes.graph,
+                     }"
+                     class="p-1 rounded-lg border-2 shadow-md hover:shadow-sm hover:cursor-pointer"
+                  >
+                     <TreeMapIcon />
+                  </div>
+                  <div
+                     @click="switchView(viewTypes.list)"
+                     :class="{
+                        'border-black': activeView === viewTypes.list,
+                     }"
+                     class="p-1 rounded-lg border-2 shadow-md hover:shadow-sm hover:cursor-pointer"
+                  >
+                     <ListIcon />
+                  </div>
+               </div>
+            </div>
+         </div>
+
+         <template v-if="activeView == viewTypes.graph">
+            <div class="my-3">
+               <Categorization_TreeChart
+                  :chartID="'lead-by-step'"
+                  :timeline="leadChartStore.getCurrentLeadTimeframe"
+                  :series="dataSet_series"
+                  :total="dataSet_total"
+                  :chart_height="400"
+                  @dataSelected="loadModal"
+               />
+            </div>
+         </template>
+         <template v-else>
+            <div class="my-3 max-h-[400px] overflow-y-scroll">
+               <LeadLists
+                  :headers="tableHeaders"
+                  :rows="tableRows"
+                  @dataSelected="loadModal"
+               />
+            </div>
+         </template>
+      </div>
+   </div>
 </template>
