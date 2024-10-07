@@ -17,8 +17,6 @@ import InfinityScrollLoader from "@/Components/InfinityScrollLoader.vue";
 import Matter_List_View from "@/Components/Modals/DataContainers/Matter_List_View.vue";
 import generateRandomId from "@/utils/randomId";
 
-import { initAccordions } from "flowbite";
-
 const modalStore = useModalStore();
 
 const moreDataLoading = ref(false);
@@ -196,13 +194,6 @@ const handleInfiniteScroll = () => {
    }
 };
 
-watchEffect(() => {
-   if (dataforView.value) {
-      initFlowbite();
-      initAccordions();
-   }
-});
-
 onMounted(async () => {
    let initData = modalStore.getCurrentModalIntializationData;
 
@@ -221,8 +212,6 @@ onMounted(async () => {
       // console.log(data_container);
       data_container.value.addEventListener("scroll", handleInfiniteScroll);
    }
-
-   initAccordions();
 });
 </script>
 
@@ -239,16 +228,12 @@ onMounted(async () => {
          </template>
          <template v-else>
             <section
-               class="py-1 my-1 h-full max-h-[500px] overflow-y-auto grid gap-4 gap-x-10 grid-cols-1"
+               class="h-full max-h-[500px] overflow-y-auto grid gap-4 gap-x-10 grid-cols-1"
                ref="data_container"
             >
                <div>
                   <template v-if="(dataforView ?? []).length > 0">
-                     <div
-                        :id="accordion_id"
-                        data-accordion="collapse"
-                        class="my-8"
-                     >
+                     <div :id="accordion_id" class="my-4">
                         <template
                            v-for="(data, index) in dataforView"
                            :key="index"

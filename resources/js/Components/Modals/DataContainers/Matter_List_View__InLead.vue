@@ -161,7 +161,7 @@ onMounted(() => {});
 
          <div class="grid grid-cols-3 gap-2">
             <div
-               v-if="(matter_data?.step_name ?? '') != ''"
+               v-if="(matter_data?.current_step?.step_name ?? '') != ''"
                class="flex flex-col gap-y-1 text-base font-bold text-gray-700 p-2 border rounded-lg"
             >
                <div>
@@ -174,13 +174,15 @@ onMounted(() => {});
                   <p
                      class="text-sm font-normal text-gray-500 dark:text-gray-400 my-2 max-h-[100px] overflow-y-auto break-all"
                   >
-                     {{ matter_data?.step_name ?? "" }}
+                     {{ matter_data?.current_step?.step_name ?? "" }}
                   </p>
                </div>
             </div>
 
             <div
-               v-if="(matter_data?.ASALA_name ?? '') != ''"
+               v-if="
+                  (matter_data?.current_matter_attorney?.ASALA_name ?? '') != ''
+               "
                class="flex flex-col gap-y-1 text-base font-bold text-gray-700 p-2 border rounded-lg"
             >
                <div>
@@ -193,26 +195,9 @@ onMounted(() => {});
                   <p
                      class="text-sm font-normal text-gray-500 dark:text-gray-400 my-2 max-h-[100px] overflow-y-auto break-all"
                   >
-                     {{ matter_data?.ASALA_name ?? "" }}
-                  </p>
-               </div>
-            </div>
-
-            <div
-               v-if="(matter_data?.lead_name ?? '') != ''"
-               class="flex flex-col gap-y-1 text-base font-bold text-gray-700 p-2 border rounded-lg"
-            >
-               <div>
-                  <span
-                     class="inline-flex items-center justify-center px-2 py-0.5 ms-2 text-xs font-medium text-gray-500 bg-gray-200 rounded"
-                     >Lead</span
-                  >
-               </div>
-               <div class="flex-1 ms-2 break-all">
-                  <p
-                     class="text-sm font-normal text-gray-500 dark:text-gray-400 my-2 max-h-[100px] overflow-y-auto break-all"
-                  >
-                     {{ matter_data?.lead_name ?? "" }}
+                     {{
+                        matter_data?.current_matter_attorney?.ASALA_name ?? ""
+                     }}
                   </p>
                </div>
             </div>

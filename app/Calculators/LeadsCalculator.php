@@ -117,7 +117,6 @@ class LeadsCalculator extends Calculator
             }
 
             $this->loadedLeadsWithinTimeframe_query = clone $loadedLeadsCollection_query;
-
         } catch (Throwable $th) {
             logger(print_r("loadLeadsWhereDateCreatedIsWithinTimespan Error " . $th->getMessage(), true));
             $this->loadedLeadsCollection = collect([]);
@@ -128,11 +127,11 @@ class LeadsCalculator extends Calculator
     {
         try {
             $this->retainedLeads_query = lead::select('matters.*', 'current_step_change_logs.*', 'a_s__steps.*', 'leads.*')
-            ->leftJoin('matters', 'leads.lead_id', '=', 'matters.matter_lead')
-            ->leftJoin('current_step_change_logs', 'matters.matter_id', '=', 'current_step_change_logs.CSCL_action_step_matter_id')
-            ->leftJoin('a_s__steps', 'current_step_change_logs.CSCL_current_step', '=', 'a_s__steps.step_id')
-            ->whereIn('a_s__steps.step_name', $this->retained_leads_identifier)
-            ->where('current_step_change_logs.CSCL_change_date_time', '!=', null);
+                ->leftJoin('matters', 'leads.lead_id', '=', 'matters.matter_lead')
+                ->leftJoin('current_step_change_logs', 'matters.matter_id', '=', 'current_step_change_logs.CSCL_action_step_matter_id')
+                ->leftJoin('a_s__steps', 'current_step_change_logs.CSCL_current_step', '=', 'a_s__steps.step_id')
+                ->whereIn('a_s__steps.step_name', $this->retained_leads_identifier)
+                ->where('current_step_change_logs.CSCL_change_date_time', '!=', null);
 
             if (($from ?? false)) {
                 if ($from !== 'all') {
@@ -149,12 +148,12 @@ class LeadsCalculator extends Calculator
                     $this->retainedLeads_query = $this->retainedLeads_query->where('leads.lead_date_created', '<=', $toDate);
                 }
             }
-            
+
             // $sql = $this->retainedLeads_query->toSql();
             // $bindings = $this->retainedLeads_query->getBindings();
             // logger(print_r($sql, true));
             // logger(print_r($bindings, true));
-            
+
             $allLeads = $this->retainedLeads_query->get();
             // logger(print_r($allLeads, true));
 
@@ -171,10 +170,10 @@ class LeadsCalculator extends Calculator
 
     public function prepareNewLeads()
     {
-        if(
+        if (
             $this->loaded_All_LeadsCollection == null ||
-            count($this->loaded_All_LeadsCollection ?? []) == 0)
-        {
+            count($this->loaded_All_LeadsCollection ?? []) == 0
+        ) {
             return;
         }
 
@@ -208,17 +207,17 @@ class LeadsCalculator extends Calculator
     {
 
         // logger( print_r($this->loadedRetainedLeadsCollection, true) );
-        if(
+        if (
             $this->loadedRetainedLeadsCollection == null ||
-            count($this->loadedRetainedLeadsCollection ?? []) == 0)
-        {
+            count($this->loadedRetainedLeadsCollection ?? []) == 0
+        ) {
             $this->retainedLeadsData = [];
             return;
         }
 
         foreach ($this->loadedRetainedLeadsCollection as $key => $value) {
             # code...
-        
+
             $elem = $value;
 
             $date = $elem->CSCL_change_date_time ?? false;
@@ -254,9 +253,9 @@ class LeadsCalculator extends Calculator
         $loadedLeadsCollection_query = clone $this->loadedLeadsWithinTimeframe_query;
 
         $leadByCurrentStep = $loadedLeadsCollection_query->leftJoin('current_step_change_logs', function (JoinClause $join) {
-                $join->on('matters.matter_id', '=', 'current_step_change_logs.CSCL_action_step_matter_id')
-                    ->on('matters.matter_current_step', '=', 'current_step_change_logs.CSCL_current_step');
-            });
+            $join->on('matters.matter_id', '=', 'current_step_change_logs.CSCL_action_step_matter_id')
+                ->on('matters.matter_current_step', '=', 'current_step_change_logs.CSCL_current_step');
+        });
 
         if (
             ($from ?? false)
@@ -285,13 +284,13 @@ class LeadsCalculator extends Calculator
             ->get();
 
         $leadByCurrentStep_data_sorted = $leadByCurrentStep_data->sortByDesc('matter_date_created')->unique('lead_id')->groupBy('step_name');
-        
+
         $leadByCurrentStep_data_counted = [];
 
         foreach ($leadByCurrentStep_data_sorted as $key => $value) {
             # code...
             $lead_count = 0;
-            if(count($value ?? []) > 0){
+            if (count($value ?? []) > 0) {
                 $lead_count = count($value);
             }
 
@@ -361,9 +360,9 @@ class LeadsCalculator extends Calculator
                 ->where('lead_status_change_logs.LSCL_change_date_time', '!=', null)
                 ->where('lead_statuses.LSt_status', '=', $this->intake_step_identifier_on_lead_status);
 
-                // $fullQuery = Str::replaceArray('?', $loadedIntakeScheduledStatus_changeLogCollection_query->getBindings(), $loadedIntakeScheduledStatus_changeLogCollection_query->toSql());
+            // $fullQuery = Str::replaceArray('?', $loadedIntakeScheduledStatus_changeLogCollection_query->getBindings(), $loadedIntakeScheduledStatus_changeLogCollection_query->toSql());
 
-                // logger($fullQuery);
+            // logger($fullQuery);
 
             if (
                 ($from ?? false)
@@ -474,7 +473,7 @@ class LeadsCalculator extends Calculator
         try {
             //code...
             $loadedRetainerMeetingConsultation_changeLogCollection_query = consultationChangeLog::leftJoin('matters', 'consultation_change_logs.CCL_action_step_matter_id', '=', 'matters.matter_id')
-            ->leftJoin('leads', 'matters.matter_lead', '=', 'leads.lead_id')
+                ->leftJoin('leads', 'matters.matter_lead', '=', 'leads.lead_id')
                 ->where('consultation_change_logs.CCL_schedule_date', '!=', null)
                 ->where('consultation_change_logs.CCL_outcome', '=', $this->retainerMeetingScheduled_identifier_on_consultation_change_log);
 
@@ -579,11 +578,11 @@ class LeadsCalculator extends Calculator
             //code...
             $totalDays = 0;
             $totalRetainedLeadsCounted = 0;
-            
-            if(
+
+            if (
                 $this->loadedRetainedLeadsCollection == null ||
-                count($this->loadedRetainedLeadsCollection ?? []) == 0)
-                {
+                count($this->loadedRetainedLeadsCollection ?? []) == 0
+            ) {
                 $this->leads_averageDaysToRetained = 0;
                 return;
             }
@@ -915,23 +914,16 @@ class LeadsCalculator extends Calculator
 
             $loadedLeadsWithinTimeframe_query = clone $this->loadedLeadsWithinTimeframe_query;
             $casesInGivenStep = $loadedLeadsWithinTimeframe_query->where('a_s__steps.step_name', '=', $stepname)->cursorPaginate(20);
-            
+
             foreach ($casesInGivenStep as $case) {
                 // Lazy load the 'matters' relationship, if not already loaded
                 $lead_id = $case->lead_id ?? null;
 
-                if($lead_id != null){
+                if ($lead_id != null) {
                     $case['matters'] = matter::where('matter_lead', '=', $lead_id)
                         ->with(['currentStep', 'currentMatterAttorney'])
                         ->select(
-                            "matter_id",
-                            "matter_actionstep_id",
-                            "matter_current_name",
-                            "matter_next_task",
-                            "matter_date_created",
-                            "matter_last_activity",
-                            "matter_current_step",
-                            "matter_assigned_to",
+                            "matters.*",
                         )->get();
                 }
             }
@@ -956,23 +948,16 @@ class LeadsCalculator extends Calculator
             $leadsWithSource = $loadedLeadsWithinTimeframe_query
                 ->where('lead_sources.LS_source', '=', $source)
                 ->cursorPaginate(20);
-            
+
             foreach ($leadsWithSource as $lead) {
                 // Lazy load the 'matters' relationship, if not already loaded
                 $lead_id = $lead->lead_id ?? null;
 
-                if($lead_id != null){
+                if ($lead_id != null) {
                     $lead['matters'] = matter::where('matter_lead', '=', $lead_id)
                         ->with(['currentStep', 'currentMatterAttorney'])
                         ->select(
-                            "matter_id",
-                            "matter_actionstep_id",
-                            "matter_current_name",
-                            "matter_next_task",
-                            "matter_date_created",
-                            "matter_last_activity",
-                            "matter_current_step",
-                            "matter_assigned_to",
+                            "matters.*",
                         )->get();
                 }
             }
@@ -984,15 +969,16 @@ class LeadsCalculator extends Calculator
         }
     }
 
-    public function getSelectedRetainedLeads($from = null, $to = null){
+    public function getSelectedRetainedLeads($from = null, $to = null)
+    {
         try {
 
             $retainedLeads_query = lead::select('matters.*', 'current_step_change_logs.*', 'a_s__steps.*', 'leads.*')
-            ->leftJoin('matters', 'leads.lead_id', '=', 'matters.matter_lead')
-            ->leftJoin('current_step_change_logs', 'matters.matter_id', '=', 'current_step_change_logs.CSCL_action_step_matter_id')
-            ->leftJoin('a_s__steps', 'current_step_change_logs.CSCL_current_step', '=', 'a_s__steps.step_id')
-            ->whereIn('a_s__steps.step_name', $this->retained_leads_identifier)
-            ->where('current_step_change_logs.CSCL_change_date_time', '!=', null);
+                ->leftJoin('matters', 'leads.lead_id', '=', 'matters.matter_lead')
+                ->leftJoin('current_step_change_logs', 'matters.matter_id', '=', 'current_step_change_logs.CSCL_action_step_matter_id')
+                ->leftJoin('a_s__steps', 'current_step_change_logs.CSCL_current_step', '=', 'a_s__steps.step_id')
+                ->whereIn('a_s__steps.step_name', $this->retained_leads_identifier)
+                ->where('current_step_change_logs.CSCL_change_date_time', '!=', null);
 
             if (($from ?? false)) {
                 if ($from !== 'all') {
@@ -1009,40 +995,33 @@ class LeadsCalculator extends Calculator
                     $retainedLeads_query = $retainedLeads_query->where('current_step_change_logs.CSCL_change_date_time', '<=', $toDate);
                 }
             }
-            
+
             $allLeads = $retainedLeads_query->get();
             $loadedRetainedLeadsCollection = $allLeads->sortBy('CSCL_change_date_time')->unique('lead_id');
 
-            if(
+            if (
                 $loadedRetainedLeadsCollection == null ||
-                count($loadedRetainedLeadsCollection ?? []) == 0)
-            {
+                count($loadedRetainedLeadsCollection ?? []) == 0
+            ) {
                 throw new Error('empty base collection');
             }
-            
+
             $lead_ids = $loadedRetainedLeadsCollection->pluck('lead_id');
 
             $retained_leads = lead::leftJoin('lead_sources', 'leads.lead_source', '=', 'lead_sources.LS_id')
                 ->whereIn('leads.lead_id', $lead_ids)
                 ->cursorPaginate(20);
 
-            
+
             foreach ($retained_leads as $lead) {
                 // Lazy load the 'matters' relationship, if not already loaded
                 $lead_id = $lead->lead_id ?? null;
 
-                if($lead_id != null){
+                if ($lead_id != null) {
                     $lead['matters'] = matter::where('matter_lead', '=', $lead_id)
                         ->with(['currentStep', 'currentMatterAttorney'])
                         ->select(
-                            "matter_id",
-                            "matter_actionstep_id",
-                            "matter_current_name",
-                            "matter_next_task",
-                            "matter_date_created",
-                            "matter_last_activity",
-                            "matter_current_step",
-                            "matter_assigned_to",
+                            "matters.*",
                         )->get();
                 }
             }
@@ -1065,23 +1044,16 @@ class LeadsCalculator extends Calculator
             $loadedLeadsWithinTimeframe_query = clone $this->loadedLeadsWithinTimeframe_query;
             $newLeadsData = $loadedLeadsWithinTimeframe_query
                 ->cursorPaginate(20);
-            
+
             foreach ($newLeadsData as $lead) {
                 // Lazy load the 'matters' relationship, if not already loaded
                 $lead_id = $lead->lead_id ?? null;
 
-                if($lead_id != null){
+                if ($lead_id != null) {
                     $lead['matters'] = matter::where('matter_lead', '=', $lead_id)
                         ->with(['currentStep', 'currentMatterAttorney'])
                         ->select(
-                            "matter_id",
-                            "matter_actionstep_id",
-                            "matter_current_name",
-                            "matter_next_task",
-                            "matter_date_created",
-                            "matter_last_activity",
-                            "matter_current_step",
-                            "matter_assigned_to",
+                            "matters.*",
                         )->get();
                 }
             }
