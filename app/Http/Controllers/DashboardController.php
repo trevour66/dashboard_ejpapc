@@ -14,8 +14,11 @@ class DashboardController extends Controller
 {
     //
 
-    public function index()
+    public function index(Request $request)
     {
+        $user = $request->user();
+
+        logger($user->employee);
         $defaultTimeframe = ALL;
 
         $leadCalculator = new LeadsCalculator();
@@ -25,7 +28,7 @@ class DashboardController extends Controller
         $leadCalculator->loadAllLeads();
         $leadCalculator->prepareNewLeads();
 
-        $leadCalculator->loadRetainedLeadsFromLeadsCreatedWithinTimespan();        
+        $leadCalculator->loadRetainedLeadsFromLeadsCreatedWithinTimespan();
         $leadCalculator->prepareRetainedLeads();
 
         return Inertia::render('Dashboard', [
