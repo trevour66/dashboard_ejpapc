@@ -34,7 +34,6 @@ class FinancesCalculator extends Calculator
 
     public function loadAnticipatedFunds($from = null, $to = null)
     {
-        //matter_settlement_funds_expected_date
         try {
             //code...
             $loadedAnticipatedFundsCollection_query = matter::leftJoin('leads', 'matters.matter_lead', '=', 'leads.lead_id')
@@ -48,7 +47,8 @@ class FinancesCalculator extends Calculator
                     $fromDate = new DateTime($from);
 
 
-                    $loadedAnticipatedFundsCollection_query = $loadedAnticipatedFundsCollection_query->where('matters.matter_settlement_funds_expected_date', '>=', $fromDate);
+                    // $loadedAnticipatedFundsCollection_query = $loadedAnticipatedFundsCollection_query->where('matters.matter_settlement_funds_expected_date', '>=', $fromDate);
+                    $loadedAnticipatedFundsCollection_query = $loadedAnticipatedFundsCollection_query->where('matters.matter_date_created', '>=', $fromDate);
                 }
             }
 
@@ -59,7 +59,8 @@ class FinancesCalculator extends Calculator
                 if ($to !== 'all') {
                     $toDate = new DateTime($to);
 
-                    $loadedAnticipatedFundsCollection_query = $loadedAnticipatedFundsCollection_query->where('matters.matter_settlement_funds_expected_date', '<=', $toDate);
+                    // $loadedAnticipatedFundsCollection_query = $loadedAnticipatedFundsCollection_query->where('matters.matter_settlement_funds_expected_date', '<=', $toDate);
+                    $loadedAnticipatedFundsCollection_query = $loadedAnticipatedFundsCollection_query->where('matters.matter_date_created', '<=', $toDate);
                 }
             }
 
@@ -97,8 +98,7 @@ class FinancesCalculator extends Calculator
                 if ($from !== 'all') {
                     $fromDate = new DateTime($from);
 
-
-                    $loadedAnticipatedFundsThatHasBeenReceivedCollection_query = $loadedAnticipatedFundsThatHasBeenReceivedCollection_query->where('matters.matter_settlement_funds_expected_date', '>=', $fromDate);
+                    $loadedAnticipatedFundsThatHasBeenReceivedCollection_query = $loadedAnticipatedFundsThatHasBeenReceivedCollection_query->where('matters.matter_settlement_funds_received_date', '>=', $fromDate);
                 }
             }
 
@@ -109,7 +109,7 @@ class FinancesCalculator extends Calculator
                 if ($to !== 'all') {
                     $toDate = new DateTime($to);
 
-                    $loadedAnticipatedFundsThatHasBeenReceivedCollection_query = $loadedAnticipatedFundsThatHasBeenReceivedCollection_query->where('matters.matter_settlement_funds_expected_date', '<=', $toDate);
+                    $loadedAnticipatedFundsThatHasBeenReceivedCollection_query = $loadedAnticipatedFundsThatHasBeenReceivedCollection_query->where('matters.matter_settlement_funds_received_date', '<=', $toDate);
                 }
             }
 
@@ -184,8 +184,7 @@ class FinancesCalculator extends Calculator
 
                 $elem = $this->loadedAnticipatedFundsCollection[$i];
 
-                logger($elem->ASALA_name);
-
+                // logger($elem->ASALA_name);
 
                 $responsibeAtty = $elem->ASALA_name ?? 'unallocated';
 
