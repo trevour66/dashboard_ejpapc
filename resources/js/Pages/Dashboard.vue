@@ -115,7 +115,7 @@ onBeforeUnmount(() => {
                   <div>
                      <div class="toolbar float-right">
                         <div
-                           class="inline-flex rounded-md shadow-sm"
+                           class="grid grid-cols-3 gap-2 md:gap-0 md:inline-flex rounded-md shadow-sm text-xs"
                            role="group"
                         >
                            <button
@@ -129,11 +129,11 @@ onBeforeUnmount(() => {
                                  'bg-white':
                                     leadChartStore.getCurrentLeadTimeframe !=
                                     button.data,
-                                 'rounded-s-lg': index === 0,
-                                 'rounded-e-lg':
+                                 'md:rounded-s-lg': index === 0,
+                                 'md:rounded-e-lg':
                                     index === timeframeButtons.length - 1,
                               }"
-                              class="px-1.5 md:px-4 py-1 md:py-2 text-sm font-medium text-gray-900 border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10"
+                              class="px-2 md:px-4 py-1 md:py-2 text-xs md:text-sm font-medium text-gray-900 border border-gray-300 hover:bg-gray-100 hover:text-blue-700 focus:z-10"
                            >
                               <span v-if="(button?.name ?? '') === 'Custom'">
                                  {{ button.name }}

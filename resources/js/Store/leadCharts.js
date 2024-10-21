@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { Timeframe } from "@/config/timeframe";
+import { getThisWeekDates, getThisMonthDates, getLastMonthDates, getThisQuarterDates, getThisYearDates } from "@/utils/date_to_and_from_generator";
 
 export const useLeadChartsStore = defineStore("leadCharts", () => {
 	const leadTimeframe = ref(Timeframe.this_month);
@@ -16,38 +17,6 @@ export const useLeadChartsStore = defineStore("leadCharts", () => {
 		customRange_leadTimeframe_from.value = ''
 		customRange_leadTimeframe_to.value = ''
 	}
-
-	const getThisWeekDates = () => {
-		// Ensure the current date is a valid Date object
-		let currentDate = new Date();
-	
-		// Calculate the start (Monday) and end (Sunday) of "this week"
-		let dayOfWeek = currentDate.getDay();
-		let diffToMonday = (dayOfWeek === 0 ? 6 : dayOfWeek - 1); // If it's Sunday, treat it as the last day of the week
-		let startOfWeek = new Date(currentDate);
-		startOfWeek.setDate(currentDate.getDate() - diffToMonday); // Go back to Monday
-		let endOfWeek = new Date(startOfWeek);
-		endOfWeek.setDate(startOfWeek.getDate() + 6); // Go forward to Sunday
-	
-		return {
-			from: startOfWeek, // Format as YYYY-MM-DD
-			to: endOfWeek
-		};
-	}	
-
-	const getThisMonthDates = () => {
-		// Ensure the current date is a valid Date object
-		let currentDate = new Date();
-	
-		// Calculate the start (1st) and end (last day) of "this month"
-		let startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1); // 1st day of current month
-		let endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0); // Last day of current month
-	
-		return {			
-			from: startOfMonth,
-			to: endOfMonth
-		};
-	}	
 
 	const getFromAndToDatetimeOfCurrentLeadTimeframe = computed(() => {
 		const today = new Date();
@@ -66,6 +35,33 @@ export const useLeadChartsStore = defineStore("leadCharts", () => {
 				const thisMonthDates = getThisMonthDates()
 				from = thisMonthDates.from
 				to = thisMonthDates.to
+				resetRange()
+				break;
+
+			case Timeframe.last_month:
+				const lastMonthDates = getLastMonthDates()
+
+				// console.log(lastMonthDates)
+				from = lastMonthDates.from
+				to = lastMonthDates.to
+				resetRange()
+				break;
+			
+			case Timeframe.this_quarter:
+				const thisQuarterDates = getThisQuarterDates()
+
+				// console.log(thisQuarterDates)
+				from = thisQuarterDates.from
+				to = thisQuarterDates.to
+				resetRange()
+				break;
+
+			case Timeframe.this_year:
+				const thisYearDates = getThisYearDates()
+
+				// console.log(thisYearDates)
+				from = thisYearDates.from
+				to = thisYearDates.to
 				resetRange()
 				break;
 

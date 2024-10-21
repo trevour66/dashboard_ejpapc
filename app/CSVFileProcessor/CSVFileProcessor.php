@@ -97,11 +97,11 @@ class CSVFileProcessor
 
                 return $dateTime->format('Y-m-d H:i:s');
             } else {
-                return false;
+                return null;
             }
         } catch (\Throwable $th) {
             logger($th->getMessage());
-            return false;
+            return null;
         }
     }
 
@@ -110,7 +110,7 @@ class CSVFileProcessor
         $createdOrUpdatedMatterType = $this->createOrUpdateIndependentTableData('MT_type', $matterRecord['Matter Type'], new matterType()) ?? false;
         $createdOrUpdatedAS_Step = $this->createOrUpdateIndependentTableData('step_name', $matterRecord['Current Step'], new AS_Step()) ?? false;
         $createdOrUpdatedMatterStatus = $this->createOrUpdateIndependentTableData('MSt_status', $matterRecord['Matter Status'], new matterStatus()) ?? false;
-        $createdOrUpdatedMatterAttorrney = $this->createOrUpdateIndependentTableData('ASALA_name', $matterRecord['Assigned To'], new actionStep_attorneys_legalAssistant()) ?? false;
+        $createdOrUpdatedMatterAttorrney = $this->createOrUpdateIndependentTableData('ASALA_name', $matterRecord['Responsible Atty'], new actionStep_attorneys_legalAssistant()) ?? false;
 
         if (!($matterRecord['ID'] ?? false)) {
             return false;
@@ -580,7 +580,7 @@ class CSVFileProcessor
 
             $csv_temp_name = $seed . '_CSV_' . $request->file('file')->getClientOriginalName();
             $request->file('file')->storeAs('pending_matters_CSVs', $csv_temp_name);
-            
+
             $resData = response(json_encode(
                 [
                     'status' => "success",
@@ -597,7 +597,8 @@ class CSVFileProcessor
         }
     }
 
-    public function process_matters_CSV (){
+    public function process_matters_CSV()
+    {
         try {
             $filesPath = storage_path('app/pending_matters_CSVs');
             $files = File::files($filesPath);
@@ -607,19 +608,19 @@ class CSVFileProcessor
             // If files exist, sort them by creation time and get the most recent one
             if (!empty($files)) {
                 $latestFile = collect($files)
-                                ->sortByDesc(function ($file) {
-                                    return $file->getCTime(); // creation time
-                                })
-                                ->first();            
-            } 
+                    ->sortByDesc(function ($file) {
+                        return $file->getCTime(); // creation time
+                    })
+                    ->first();
+            }
 
-            if($latestFile == null){
+            if ($latestFile == null) {
                 return;
             }
-            
+
             // logger(print_r($latestFile, true));
 
-            $path = storage_path('app/pending_matters_CSVs') . '/' .$latestFile->getFilename();
+            $path = storage_path('app/pending_matters_CSVs') . '/' . $latestFile->getFilename();
 
             // Remove first line which content the content "sep=,"
             $lines = file($path);
@@ -632,7 +633,7 @@ class CSVFileProcessor
 
             $stmt = Statement::create();
             $records = $stmt->process($csv);
-            
+
 
             foreach ($records as $record) {
                 try {
@@ -671,7 +672,6 @@ class CSVFileProcessor
             }
 
             File::delete($path);
-
         } catch (\Throwable $th) {
             //throw $th;
             logger(print_r($th->getMessage(), true));
@@ -845,7 +845,8 @@ class CSVFileProcessor
         }
     }
 
-    public function process_steps_CSV (){
+    public function process_steps_CSV()
+    {
         try {
             $filesPath = storage_path('app/pending_steps_CSVs');
             $files = File::files($filesPath);
@@ -855,19 +856,19 @@ class CSVFileProcessor
             // If files exist, sort them by creation time and get the most recent one
             if (!empty($files)) {
                 $latestFile = collect($files)
-                                ->sortByDesc(function ($file) {
-                                    return $file->getCTime(); // creation time
-                                })
-                                ->first();            
-            } 
+                    ->sortByDesc(function ($file) {
+                        return $file->getCTime(); // creation time
+                    })
+                    ->first();
+            }
 
-            if($latestFile == null){
+            if ($latestFile == null) {
                 return;
             }
-            
+
             // logger(print_r($latestFile, true));
 
-            $path = storage_path('app/pending_steps_CSVs') . '/' .$latestFile->getFilename();
+            $path = storage_path('app/pending_steps_CSVs') . '/' . $latestFile->getFilename();
 
             // Remove first line which content the content "sep=,"
             $lines = file($path);
@@ -880,7 +881,7 @@ class CSVFileProcessor
 
             $stmt = Statement::create();
             $records = $stmt->process($csv);
-            
+
             foreach ($records as $record) {
                 try {
 
@@ -890,7 +891,7 @@ class CSVFileProcessor
                     if (!($this->matterDataBeforeUpdate ?? false)) {
                         throw new \Error("No matter found with given action step id");
                     }
-                    
+
                     $leadAttached = $this->matterDataBeforeUpdate->lead ?? false;
 
                     if ($leadAttached) {
@@ -930,49 +931,48 @@ class CSVFileProcessor
                     $this->createCurrentStepChangeLogTableDataFromStepsCSV($this->matterDataBeforeUpdate, "Closed Pre Intake (Not Retained)", $record["days to_Closed Pre Intake (Not Retained)_New Lead"]);
 
                     $this->createCurrentStepChangeLogTableDataFromStepsCSV($this->matterDataBeforeUpdate, "Start", $record["days to_Start_Prelit"]);
-                    
+
                     $this->createCurrentStepChangeLogTableDataFromStepsCSV($this->matterDataBeforeUpdate, "Closed - Resolved/Settled", $record["days to_Closed - Resolved/Settled_Prelit"]);
-                    
+
                     $this->createCurrentStepChangeLogTableDataFromStepsCSV($this->matterDataBeforeUpdate, "Prep", $record["days to_Prep_Prelit"]);
-                    
+
                     $this->createCurrentStepChangeLogTableDataFromStepsCSV($this->matterDataBeforeUpdate, "Predemand", $record["days to_Predemand_Prelit"]);
-                    
+
                     $this->createCurrentStepChangeLogTableDataFromStepsCSV($this->matterDataBeforeUpdate, "Demand", $record["days to_Demand_Prelit"]);
-                    
+
                     $this->createCurrentStepChangeLogTableDataFromStepsCSV($this->matterDataBeforeUpdate, "Negotiate", $record["days to_Negotiate_Prelit"]);
-                    
+
                     $this->createCurrentStepChangeLogTableDataFromStepsCSV($this->matterDataBeforeUpdate, "Pre-settled", $record["days to_Pre-settled_Prelit"]);
-                    
+
                     $this->createCurrentStepChangeLogTableDataFromStepsCSV($this->matterDataBeforeUpdate, "Settled", $record["days to_Settled_Prelit"]);
-                    
+
                     $this->createCurrentStepChangeLogTableDataFromStepsCSV($this->matterDataBeforeUpdate, "Disbursement", $record["days to_Disbursement_Prelit"]);
-                    
+
                     $this->createCurrentStepChangeLogTableDataFromStepsCSV($this->matterDataBeforeUpdate, "Severance Negotiation", $record["days to_Severance Negotiation_Prelit"]);
-                    
+
                     $this->createCurrentStepChangeLogTableDataFromStepsCSV($this->matterDataBeforeUpdate, "Stalled/ On Hold", $record["days to_Stalled/ On Hold_Prelit"]);
-                    
+
                     $this->createCurrentStepChangeLogTableDataFromStepsCSV($this->matterDataBeforeUpdate, "Admin Remedies (No Neg.)", $record["days to_Admin Remedies (No Neg.)_Prelit"]);
-                    
+
                     $this->createCurrentStepChangeLogTableDataFromStepsCSV($this->matterDataBeforeUpdate, "ADR", $record["days to_ADR_Prelit"]);
-                    
+
                     $this->createCurrentStepChangeLogTableDataFromStepsCSV($this->matterDataBeforeUpdate, "Severance Review (No Negotiation)", $record["days to_Severance Review (No Negotiation)_Prelit"]);
-                    
+
                     $this->createCurrentStepChangeLogTableDataFromStepsCSV($this->matterDataBeforeUpdate, "Advise & Counsel", $record["days to_Advise & Counsel_Prelit"]);
-                    
+
                     $this->createCurrentStepChangeLogTableDataFromStepsCSV($this->matterDataBeforeUpdate, "Closed w/out Resolution", $record["days to_Closed w/out Resolution_Prelit"]);
-                    
+
                     $this->createCurrentStepChangeLogTableDataFromStepsCSV($this->matterDataBeforeUpdate, "Finalize and Close", $record["days to_Finalize and Close_Prelit"]);
-                    
+
                     $this->createCurrentStepChangeLogTableDataFromStepsCSV($this->matterDataBeforeUpdate, "DNU Administrative Remedy", $record["days to_DNU Administrative Remedy_Prelit"]);
-                    
+
                     $this->createCurrentStepChangeLogTableDataFromStepsCSV($this->matterDataBeforeUpdate, "Pre-Negotiation", $record["days to_Pre-Negotiation_Prelit"]);
-                    
+
                     $this->createCurrentStepChangeLogTableDataFromStepsCSV($this->matterDataBeforeUpdate, "Admin. Remedies (w/Negotiation.)", $record["days to_Admin. Remedies (w/Negotiation.)_Prelit"]);
-                    
+
                     $this->createCurrentStepChangeLogTableDataFromStepsCSV($this->matterDataBeforeUpdate, "Litigation", $record["days to_Litigation_Prelit"]);
-                    
+
                     $this->createCurrentStepChangeLogTableDataFromStepsCSV($this->matterDataBeforeUpdate, "Presettled", $record["days to_Presettled_Prelit"]);
-                    
                 } catch (\Throwable $th) {
                     logger(print_r("Processing steps CSV: " . $th->getMessage(), true));
                     continue;
@@ -982,7 +982,6 @@ class CSVFileProcessor
             }
 
             File::delete($path);
-
         } catch (\Throwable $th) {
             //throw $th;
             logger(print_r($th->getMessage(), true));

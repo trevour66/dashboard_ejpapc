@@ -178,9 +178,14 @@ class FinancesCalculator extends Calculator
                 return;
             }
 
+            // logger($this->loadedAnticipatedFundsCollection);
+
             for ($i = 0; $i < count($this->loadedAnticipatedFundsCollection); $i++) {
 
                 $elem = $this->loadedAnticipatedFundsCollection[$i];
+
+                logger($elem->ASALA_name);
+
 
                 $responsibeAtty = $elem->ASALA_name ?? 'unallocated';
 
